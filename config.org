@@ -1,0 +1,765 @@
+#+TITLE: Gunnar Wrobel's Emacs configuration
+#+OPTIONS: toc:4 h:4
+
+* Emacs configuation
+
+** Global settings
+
+*** Import basic settings
+
+Set some basic information by copying =defaults.el= to =user.el= and adapting the variables set within the file.
+
+The folling part loads the =defaults.el= file (as a safeguard) as well as the =user.el= file that should overwrite all values from =defaults.el=: 
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq user-settings-defaults-file (expand-file-name "defaults.el" user-emacs-directory))
+(load user-settings-defaults-file)
+(setq user-settings-file (expand-file-name "user.el" user-emacs-directory))
+(if (file-exists-p user-settings-file)
+(load user-settings-file))
+(setq user-secrets-file (expand-file-name "secrets.el" user-emacs-directory))
+(if (file-exists-p user-secrets-file)
+(load user-secrets-file))
+#+END_SRC
+
+Provide the settings as org-mode values:
+
+#+name: user-settings-name
+#+BEGIN_SRC emacs-lisp :tangle yes
+user-settings-name
+#+END_SRC
+
+#+name: user-settings-email
+#+BEGIN_SRC emacs-lisp :tangle yes
+user-settings-email
+#+END_SRC
+
+#+name: user-settings-gpg-key-id
+#+BEGIN_SRC emacs-lisp :tangle yes
+user-settings-gpg-key-id
+#+END_SRC
+
+*** Personal information
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq user-full-name user-settings-name
+      user-mail-address user-settings-email)
+#+END_SRC
+
+*** Handling the Emacs custom file
+
+Set up the customize file to its own separate file, instead of saving customize settings in init.el.
+
+#+begin_src emacs-lisp :tangle yes
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(if (file-exists-p custom-file)
+(load custom-file))
+#+END_SRC
+
+*** Keys
+
+**** Mac OS settings
+
+On a Mac I switch CAPS LOCK with control:
+
+[[./images/global_keys_mac_modifier_keys.png]]
+
+In addition I enable direct access to function keys:
+
+[[./images/global_keys_mac_keys.png]]
+
+Some typical Mac shortcuts I set:
+
+
+[[./images/global_keys_mac_shortcuts_dock.png]]
+
+[[./images/global_keys_mac_shortcuts_mission_control.png]]
+
+[[./images/global_keys_mac_shortcuts_screenshots.png]]
+
+[[./images/global_keys_mac_shortcuts_spotlight.png]]
+
+**** Mac OS: Emacs modifier keys
+
+I reorder the Mac OS special keys so that I can use the left command key as an access key to the relatively sparse hyper keymaps so that I can add all my own key combinations there:
+
+#+begin_src emacs-lisp :tangle yes
+  (when (string-equal system-type "darwin")
+    ;; Make the easiest command key the hyper key to allow to provide room for my own user keys within the hyper space
+    (setq ns-command-modifier 'hyper)
+    ;; Move meta from option to right command
+    (setq ns-right-command-modifier 'meta)
+    ;; Free the option key from any special function to get access to special characters
+    (setq ns-option-modifier 'none)
+    ;; Move super from left command to right option
+    (setq ns-right-option-modifier 'super)
+    ;; Actually unchanged (and CAPS LOCK on my Mac OS - see above)
+    (setq ns-control-modifier 'control)
+    ;; Provide alt key on function
+    (setq ns-function-modifier 'alt))
+#+END_SRC
+
+**** Hyper key maps
+
+I used the hyper key space initially to get my own set of key
+combinations that I use pretty often.
+
+***** Keymaps
+
+#+begin_src emacs-lisp :tangle yes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  KEYMAPS
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; define a var for your keymap, so that you can set it as local map
+;; (meaning, active only when your mode is on)
+(defvar my-generic-map nil "Keymap for additional generic commands in emacs")
+(defvar non-programming-map nil "Keymap for additional non-programming commands in emacs")
+(defvar my-programming-map nil "Keymap for additional programming commands in emacs")
+(defvar magit-programming-map nil "Keymap for additional magit commands in emacs")
+(defvar whitespace-programming-map nil "Keymap for additional movement commands in emacs")
+(defvar js-programming-map nil "Keymap for additional commands during javascript programming")
+#+END_SRC
+
+***** First level
+
+These are the quick access keys that can be used while holding down the command key.
+
+****** Movement
+
+Quick, standard movement commands:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(global-set-key (kbd "H-i") 'previous-line)
+(global-set-key (kbd "H-k") 'next-line)
+(global-set-key (kbd "H-j") 'left-char)
+(global-set-key (kbd "H-l") 'right-char)
+(global-set-key (kbd "H-SPC") 'set-mark-command)
+(global-set-key (kbd "H-I") 'scroll-down-command)
+(global-set-key (kbd "H-K") 'scroll-up-command)
+(global-set-key (kbd "H-J") 'backward-word)
+(global-set-key (kbd "H-L") 'forward-word)
+(global-set-key (kbd "H-a") 'beginning-of-line)
+(global-set-key (kbd "H-e") 'end-of-line)
+#+END_SRC
+
+****** Editing
+
+Quick, standard editing commands:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(global-set-key (kbd "H-u") 'backward-delete-char-untabify)
+(global-set-key (kbd "H-U") 'backward-kill-word)
+(global-set-key (kbd "H-o") 'delete-char)
+(global-set-key (kbd "H-O") 'kill-word)
+(global-set-key (kbd "H-v") 'yank)
+(global-set-key (kbd "H-x") 'kill-region)
+(global-set-key (kbd "H-c") 'kill-ring-save)
+(global-set-key (kbd "H-q") 'fill-paragraph)
+(global-set-key (kbd "H-s") 'save-buffer)
+#+END_SRC
+
+***** Second level
+
+#+begin_src emacs-lisp :tangle yes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Generic emacs commands
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; definition for your keybinding and menu
+(when (not my-generic-map) ;; if it is not already defined
+  ;; assign command to keys
+  (setq my-generic-map (make-sparse-keymap))
+  (define-key my-generic-map (kbd "a") 'beginning-of-line)
+  (define-key my-generic-map (kbd "e") 'end-of-line)
+
+  (define-key my-generic-map (kbd "k") 'kill-this-buffer)
+  (define-key my-generic-map (kbd "o") 'my-next-window)
+  (define-key my-generic-map (kbd "p") 'my-previous-window)
+  (define-key my-generic-map (kbd "ä") 'my-skip-four-windows)
+  (define-key my-generic-map (kbd "s") 'save-buffer)
+  (define-key my-generic-map (kbd "i") 'switch-to-buffer)
+  (define-key my-generic-map (kbd "f") 'find-file)
+  (define-key my-generic-map (kbd "C-s") 'write-file)
+
+  (define-key my-generic-map (kbd "C-c") 'save-buffers-kill-terminal)
+ 
+  (define-key my-generic-map (kbd "0") 'delete-window)
+
+  (define-key my-generic-map (kbd "g") 'keyboard-quit)
+
+  (define-key my-generic-map (kbd "ö") 'yank)
+  (define-key my-generic-map (kbd "v") 'yank)
+  (define-key my-generic-map (kbd "u") 'undo-tree-visualize)
+  (define-key my-generic-map (kbd "C-w") 'kill-region)
+  (define-key my-generic-map (kbd "x") 'kill-region)
+  (define-key my-generic-map (kbd "C-ö") 'backward-kill-word)
+  (define-key my-generic-map (kbd "w") 'kill-ring-save)
+  (define-key my-generic-map (kbd "c") 'kill-ring-save)
+  (define-key my-generic-map (kbd "q") 'fill-paragraph)
+
+  (define-key my-generic-map (kbd "h") help-map))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  Non programming mode stuff
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; definition for your keybinding and menu
+(when (not non-programming-map) ;; if it is not already defined
+  ;; assign command to keys
+  (setq non-programming-map (make-sparse-keymap))
+  (define-key non-programming-map (kbd "g") 'grep)
+  (define-key non-programming-map (kbd "c") 'calc)
+  (define-key non-programming-map (kbd "j") 'jabber-connect)
+  (define-key non-programming-map (kbd "o") 'org-agenda-list)
+  (define-key non-programming-map (kbd "p") 'package-list-packages)
+  (define-key non-programming-map (kbd "e") 'eshell-new)
+  (define-key non-programming-map (kbd "n") 'nodejs-repl))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;;  My programming mode stuff
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; definition for your keybinding and menu
+(when (not magit-programming-map) ;; if it is not already defined
+  ;; assign command to keys
+  (setq magit-programming-map (make-sparse-keymap)))
+
+;; definition for your keybinding and menu
+(when (not whitespace-programming-map) ;; if it is not already defined
+  ;; assign command to keys
+  (setq whitespace-programming-map (make-sparse-keymap))
+  (define-key whitespace-programming-map (kbd "w") 'whitespace-mode)
+  (define-key whitespace-programming-map (kbd "c") 'whitespace-cleanup))
+
+;; definition for your keybinding and menu
+(when (not js-programming-map) ;; if it is not already defined
+  ;; assign command to keys
+  (setq js-programming-map (make-sparse-keymap))
+  (define-key js-programming-map (kbd "e") 'local-eslint-fix)
+  (define-key js-programming-map (kbd "j") 'jest-test-file)
+  (define-key js-programming-map (kbd "u") 'jest-update-file)
+  (define-key js-programming-map (kbd "m") 'mocha-test-file)
+  (define-key js-programming-map (kbd "a") 'mocha-test-project))
+
+;; definition for your keybinding and menu
+(when (not my-programming-map) ;; if it is not already defined
+  ;; assign command to keys
+  (setq my-programming-map (make-sparse-keymap))
+  (define-key my-programming-map (kbd ";") 'comment-region)
+  (define-key my-programming-map (kbd ",") 'uncomment-region)
+  (define-key my-programming-map (kbd "RET") 'eval-region)
+  (define-key my-programming-map (kbd "d") 'set-personal-variable-debug-on-error)
+  (define-key my-programming-map (kbd "g") magit-programming-map)
+  (define-key my-programming-map (kbd "w") whitespace-programming-map))
+  (define-key my-programming-map (kbd "j") js-programming-map)
+
+(global-set-key (kbd "H-ö") my-generic-map)
+(global-set-key (kbd "H-+") non-programming-map)
+(global-set-key (kbd "H-#") my-programming-map)
+#+END_SRC
+
+**** Key frequencies
+
+I use keyfreq to look at the keys I use and optimize key bindings for
+that usage:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  (use-package keyfreq
+    :ensure t
+    :config
+    (keyfreq-mode 1)
+    (keyfreq-autosave-mode 1))
+#+end_src
+
+*** Backups
+
+By default, Emacs saves backup files in the current directory. These
+are the files ending in ~ that are cluttering up your directory
+lists. The following code stashes them all in ~/.backups:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(setq backup-directory "~/.backups")
+(unless (file-directory-p backup-directory)
+  (make-directory backup-directory))
+(setq backup-directory-alist (list (cons "." backup-directory)))
+#+END_SRC
+
+Some basic backup settings that keeps a lot of backups around:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(setq backup-by-copying t    ; Don't delink hardlinks
+      delete-old-versions -1 ; Do not clean up the backups
+      version-control t)     ; Use version numbers on backups,
+#+END_SRC
+
+And I'm currently testing the [[https://github.com/antham/helm-backup][helm-backup]] package as an alternative
+for keeping backups in git and getting easy access to them in case of
+emergency:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  (use-package helm-backup
+    :ensure t
+    :commands helm-backup
+    :init
+    (add-hook 'after-save-hook 'helm-backup-versioning)
+    :bind ("H-B" . helm-backup))
+#+END_SRC
+
+As alternatives I looked at [[https://github.com/lewang/backup-walker][backup-walker]], [[https://github.com/chadbraunduin/backups-mode][backups-mode]] as well as
+[[https://www.emacswiki.org/emacs/backup-each-save.el][backup-each-save]]. =helm-backup= looked most promising so far though.
+
+
+*** History
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  (use-package session
+    :ensure t
+    :if (not noninteractive)
+    :load-path "site-lisp/session/lisp"
+
+    :config
+    (add-hook 'after-init-hook 'session-initialize t))
+#+END_SRC
+
+*** Undo
+
+People often struggle with the Emacs undo model, where there's really
+no concept of "redo" - you simply undo the undo.
+
+The undo tree mode - visualize your undos and branches lets you use
+=C-x u= (=undo-tree-visualize=) to visually walk through the changes
+you've made, undo back to a certain point (or redo), and go down
+different branches.
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+(use-package undo-tree
+  :diminish undo-tree-mode
+  :config
+  (progn
+    (global-undo-tree-mode)
+    (setq undo-tree-visualizer-timestamps t)
+    (setq undo-tree-visualizer-diff t)))
+#+END_SRC
+
+*** GUI
+**** Minibuffer
+
+***** yes-or-no
+
+Get rid of yes-or-no questions - y or n is enough
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+
+**** Window
+***** Theme
+
+I looked at various theme packages but found nothing that really
+pleased my eyes so I finally settled on my old config. This just
+selects a black background and a whity foreground. Otherwise it just
+uses the default Emacs settings:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  (custom-set-faces
+   '(font-lock-function-name-face
+     ((((class color) (min-colors 8)) (:foreground "yellow" :weight bold))))
+   '(default
+      ((t
+        (:background "black" :foreground "white" )))))
+#+END_SRC
+
+***** Font
+
+Tell Emacs to use the font [[http://adobe-fonts.github.io/source-code-pro/][Source Code Pro]] (installed via Font Book
+from [[https://github.com/adobe-fonts/source-code-pro/releases/tag/2.030R-ro%2F1.050R-it][this release]]):
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(add-to-list 'default-frame-alist
+             '(font . "Source Code Pro-14"))
+#+end_src
+
+#+RESULTS:
+
+Display emojis. Source of system-specific fonts is in
+[[https://github.com/syohex/emacs-ac-emoji][the README for the
+emacs-ac-emoji package.]]
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+(let ((font (if (= emacs-major-version 25)
+                "Symbola"
+              (cond ((string-equal system-type "darwin")    "Apple Color Emoji")
+                    ((string-equal system-type "gnu/linux") "Symbola")))))
+  (set-fontset-font t 'unicode font nil 'prepend))
+#+END_SRC
+
+***** No startup message
+
+This message is not really interesting:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(setq-default inhibit-startup-message t)
+#+end_src
+
+**** Modeline
+
+*** Clock in the modeline
+
+I like having the clock.
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(display-time-mode 1)
+#+end_src
+
+
+*** Git
+
+git needs to be installed early in order to allow placing the password store under version control.
+
+**** Installation
+
+git is installed on MacOS via MacPorts:
+
+#+begin_src sh
+sudo port install git
+#+end_src
+
+**** Setup
+
+Git should have a user name and email as described in a documentation about the [[https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup][initial git setup]]:
+
+#+begin_src sh :var USER_SETTINGS_EMAIL=user-settings-email USER_SETTINGS_NAME=user-settings-name
+git config --global user.name "$USER_SETTINGS_NAME"
+git config --global user.email $USER_SETTINGS_EMAIL
+git config --global --bool --add pass.signcommits true
+git config --global github.user wrobel
+git config --global api.github.com.user wrobel
+#+end_src
+
+This also enables signing all commits
+
+** Secrets
+
+*** GnuPG
+
+**** Installation
+
+GnuPG is installed on MacOS via MacPorts:
+
+#+begin_src sh
+sudo port install gnupg21
+#+end_src
+
+**** Key generation
+
+The generation of a key is documented in the [[https://www.gnupg.org/howtos/de/GPGMiniHowto-3.html#ss3.1][GnuPG documentation]].
+
+#+begin_src sh
+gpg --gen-key
+#+end_src
+
+This is the corresponding output:
+
+#+BEGIN_EXAMPLE
+gpg (GnuPG) 2.1.23; Copyright (C) 2017 Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+gpg: Verzeichnis `~/.gnupg' erzeugt
+gpg: Die "Keybox" `~/.gnupg/pubring.kbx' wurde erstellt
+Hinweis: "gpg --full-generate-key" ruft den erweiterten Dialog auf.
+
+GnuPG erstellt eine User-ID, um Ihren Schlüssel identifizierbar zu machen.
+
+Ihr Name ("Vorname Nachname"): Gunnar Wrobel
+Email-Adresse: gunnar.wrobel@jobmatch.me
+Sie haben diese User-ID gewählt:
+    "Gunnar Wrobel <gunnar.wrobel@jobmatch.me>"
+
+Ändern: (N)ame, (E)-Mail oder (F)ertig/(A)bbrechen? F
+Wir müssen eine ganze Menge Zufallswerte erzeugen.  Sie können dies
+unterstützen, indem Sie z.B. in einem anderen Fenster/Konsole irgendetwas
+tippen, die Maus verwenden oder irgendwelche anderen Programme benutzen.
+gpg: ~/.gnupg/trustdb.gpg: trust-db erzeugt
+gpg: Schlüssel ABCXYZ ist als ultimativ vertrauenswürdig gekennzeichnet
+gpg: Verzeichnis `~/.gnupg/openpgp-revocs.d' erzeugt
+gpg: Widerrufzertifikat wurde als '~/.gnupg/openpgp-revocs.d/ABCXYZ.rev' gespeichert.
+Öffentlichen und geheimen Schlüssel erzeugt und signiert.
+
+pub   rsa2048 2017-08-26 [SC] [verfällt: 2019-08-26]
+      ABCXYZ
+uid                      Gunnar Wrobel <gunnar.wrobel@jobmatch.me>
+sub   rsa2048 2017-08-26 [E] [verfällt: 2019-08-26]
+#+END_EXAMPLE
+
+*** pass
+
+**** Installation
+
+pass is installed on MacOS via MacPorts but it requires the gpg2 binary which is not compatible with the gpg binary the package =gnupg21= offers. As a workaround you can create a gpg2 link redirecting to gpg
+
+#+begin_src sh
+cd /opt/local/bin/
+sudo ln -s gpg gpg2
+sudo port install pass
+#+end_src
+
+**** Setup
+
+The setup documentation can be found [[https://www.passwordstore.org][here]].
+
+Simply initialize the store with the GnuPG key ID from the GnuPG setup above:
+
+#+begin_src sh :var GNU_PG_KEY_ID=user-settings-gpg-key-id :results output
+pass init $GNU_PG_KEY_ID
+pass git init
+pass git remote add origin git@gitlab.com:gwrobel/password-store.git
+pass git push -u --all
+#+end_src
+
+#+RESULTS:
+: Password store initialized for 88B405B6CAF4B265
+: Leeres Git-Repository in /Users/gwjmm/.password-store/.git/ initialisiert
+: [master (Basis-Commit) 72ed975] Add current contents of password store.
+:  1 file changed, 1 insertion(+)
+:  create mode 100644 .gpg-id
+: [master 0bb5284] Configure git repository for gpg file diff.
+:  1 file changed, 1 insertion(+)
+:  create mode 100644 .gitattributes
+
+**** Browser integration
+
+Downloaded [[https://github.com/dannyvankooten/browserpass/releases/download/1.0.6/browserpass-darwinx64.zip][Darwin x64 binary]] from [[https://github.com/dannyvankooten/browserpass/releases][here]].
+
+Installation procedure (for the wrapper workaround see [[https://github.com/dannyvankooten/browserpass/issues/13][bug report)]]:
+
+#+begin_src sh :results output
+cd ~/Downloads
+test -d ~/bin || mkdir ~/bin
+unzip browserpass-darwinx64.zip browserpass-darwinx64 -d ~/bin
+#+end_src
+
+#+begin_src sh :tangle ~/bin/browserpass-wrapper.sh :padline no :tangle-mode (identity #o755)
+#!/bin/bash
+
+if [ -f "${HOME}/.gpg-agent-info" ]
+then
+source ${HOME}/.gpg-agent-info
+export GPG_AGENT_INFO
+fi
+export GPG_TTY="$(tty)"
+export PATH="$PATH:/opt/local/bin"
+~/bin/browserpass-darwinx64 "$@"
+exit $?
+#+end_src
+
+#+RESULTS:
+
+#+begin_src sh :tangle "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/com.dannyvankooten.browserpass.json" :padline no
+{
+  "name": "com.dannyvankooten.browserpass",
+  "description": "Browserpass binary for the Chrome extension",
+  "path": "/Users/gwjmm/bin/browserpass-wrapper.sh",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://jegbgfamcgeocbfeebacnkociplhmfbk/",
+    "chrome-extension://klfoddkbhleoaabpmiigbmpbjfljimgb/"
+  ]
+}
+#+end_src
+
+#+RESULTS:
+
+In addition you need to install the [[https://chrome.google.com/webstore/detail/browserpass/jegbgfamcgeocbfeebacnkociplhmfbk][browserpass chrome extension]].
+
+**** Emacs support
+
+Install the [[https://github.com/NicolasPetton/pass][=pass=]] package:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  (use-package pass
+    :ensure t
+    :bind
+    (
+     :map non-programming-map
+          ("P" . pass))
+  )
+#+END_SRC
+
+Install the [[https://github.com/DamienCassou/auth-password-store][=auth-password-store=]] package:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package auth-password-store
+:ensure t
+:init
+(auth-pass-enable)
+)
+#+END_SRC
+
+***** TODO Look at helm-pass https://github.com/jabranham/helm-pass
+
+** Coding
+*** Magit
+
+A great interface for git projects. It's much more pleasant to use
+than the git interface on the command line. Use an =H-# g g= to
+access magit.
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  (use-package magit
+    :ensure t
+    :commands magit-status
+    :config
+    (progn
+      (magit-auto-revert-mode 1))
+    :init
+    (add-hook 'magit-mode-hook 'magit-load-config-extensions)
+    :bind
+    (
+     :map magit-programming-map
+          ("g" . magit-status)
+          ("b" . magit-blame-mode)
+          ("B" . magit-branches)))
+#+end_src
+
+A setup for fullscreen magit:
+
+#+BEGIN_QUOTE
+The following code makes magit-status run alone in the frame, and then
+restores the old window configuration when you quit out of magit.
+
+No more juggling windows after commiting. It's magit bliss.
+#+END_QUOTE
+[[http://whattheemacsd.com/setup-magit.el-01.html][Source: Magnar Sveen]]
+
+#+begin_src emacs-lisp :tangle yes :results silent
+;; full screen magit-status
+(defadvice magit-status (around magit-fullscreen activate)
+  (window-configuration-to-register :magit-fullscreen)
+  ad-do-it
+  (delete-other-windows))
+
+(defun magit-quit-session ()
+  "Restores the previous window configuration and kills the magit buffer"
+  (interactive)
+  (kill-buffer)
+  (jump-to-register :magit-fullscreen))
+#+end_src
+
+The package =magithub= provide access to [[github.com]] within emacs. This
+relies on the helper package [[https://github.com/magit/ghub][ghub]] which needs a [[https://github.com/settings/tokens][developer token]] for
+access to the [[https://api.github.com/][github API]]. I stored this token within the =pass= system
+under "api.github.com" (as I have my normal password for github under
+"github.com") and needed to fix the =ghub-instance= parameter to
+"api.github.com" accordingly. The token is being pulled by the =ghub=
+package (pull this from =melpa= and not from =melpa-stable=) using
+=auth-password-store=. In addition =magithub= needs the git config
+=api.github.com.user= set somewhere above. The default timeout of
+three seconds was too slow on my machine.
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  (use-package magithub
+    :after magit
+    :ensure t
+    :init
+     (setq ghub-instance "api.github.com")
+     (setq magithub-api-timeout 30)
+    :config
+     (magithub-feature-autoinject t))
+#+end_src
+
+** Org mode
+
+*** org-babel
+
+**** Supported languages
+
+This initializes the set of languages =org-babel= supports:
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package ob-http
+:ensure t
+)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((C . t)
+   (calc . t)
+   (ditaa . t)
+   (dot . t)
+   (http . t)
+   (java . t)
+   (js . t)
+   (latex . t)
+   (ledger . t)
+   (lisp . t)
+   (python . t)
+   (R . t)
+   (sh . t)
+   (sqlite . t)))
+
+#+END_SRC
+
+** Communication
+
+*** Slack
+
+Followed procedure at https://github.com/yuya373/emacs-slack
+
+
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package slack
+  :ensure t
+  :commands (slack-start)
+  :init
+  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
+  (setq slack-prefer-current-team t)
+  :config
+  (slack-register-team
+   :name "truck-pro"
+   :default t
+   :client-id secret-slack-tp-client-id
+   :client-secret secret-slack-tp-client-secret
+   :token secret-slack-tp-token
+   :subscribed-channels '(general random liveprodukt)))
+#+END_SRC
+
+#+RESULTS:
+: t
+
+**** TODO Convert slack-register-team to a personal team list configurable in secrets.el
+
+*** Alert
+
+Useful for growl-like notifications (but you need the unstable =melpa= version hence a package pinned to melpa):
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package alert
+  :ensure t
+  :commands (alert)
+  :init
+  (setq alert-default-style 'osx-notifier)
+  (setq alert-log-messages t))
+#+END_SRC
+
+#+RESULTS:
+: [nil 22945 64763 370655 nil alert-remove-when-active (alert-message-remove (:message "TEST" :title "config.org" :icon nil :severity normal :category nil :buffer #<buffer config.org> :mode org-mode :data nil)) nil 0]
+
+
+Documentation for =alert=: https://github.com/jwiegley/alert
+
+** TO-DOs
+
+*** TODO Look at helm https://emacs-helm.github.io/helm/

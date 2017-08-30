@@ -1,0 +1,6 @@
+(defvar user-settings-email "gunnar.wrobel@jobmatch.me")
+(defvar user-settings-name "Gunnar Wrobel")
+(defvar user-settings-gpg-key-id "")
+(defvar secret-slack-tp-client-id "")
+(defvar secret-slack-tp-client-secret "")
+(defvar secret-slack-tp-token "")
