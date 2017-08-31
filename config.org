@@ -512,7 +512,7 @@ sudo port install git
 
 Git should have a user name and email as described in a documentation about the [[https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup][initial git setup]]:
 
-#+begin_src sh :var USER_SETTINGS_EMAIL=user-settings-email USER_SETTINGS_NAME=user-settings-name
+#+begin_src sh :var USER_SETTINGS_EMAIL=user-settings-email USER_SETTINGS_NAME=user-settings-name :results silent
 git config --global user.name "$USER_SETTINGS_NAME"
 git config --global user.email $USER_SETTINGS_EMAIL
 git config --global --bool --add pass.signcommits true
@@ -602,8 +602,8 @@ pass git push -u --all
 #+end_src
 
 #+RESULTS:
-: Password store initialized for 88B405B6CAF4B265
-: Leeres Git-Repository in /Users/gwjmm/.password-store/.git/ initialisiert
+: Password store initialized for XYZ
+: Leeres Git-Repository in ~/.password-store/.git/ initialisiert
 : [master (Basis-Commit) 72ed975] Add current contents of password store.
 :  1 file changed, 1 insertion(+)
 :  create mode 100644 .gpg-id
@@ -617,7 +617,7 @@ Downloaded [[https://github.com/dannyvankooten/browserpass/releases/download/1.0
 
 Installation procedure (for the wrapper workaround see [[https://github.com/dannyvankooten/browserpass/issues/13][bug report)]]:
 
-#+begin_src sh :results output
+#+begin_src sh :results silent
 cd ~/Downloads
 test -d ~/bin || mkdir ~/bin
 unzip browserpass-darwinx64.zip browserpass-darwinx64 -d ~/bin
@@ -637,8 +637,6 @@ export PATH="$PATH:/opt/local/bin"
 exit $?
 #+end_src
 
-#+RESULTS:
-
 #+begin_src sh :tangle "~/Library/Application Support/Google/Chrome/NativeMessagingHosts/com.dannyvankooten.browserpass.json" :padline no
 {
   "name": "com.dannyvankooten.browserpass",
@@ -651,8 +649,6 @@ exit $?
   ]
 }
 #+end_src
-
-#+RESULTS:
 
 In addition you need to install the [[https://chrome.google.com/webstore/detail/browserpass/jegbgfamcgeocbfeebacnkociplhmfbk][browserpass chrome extension]].
 
