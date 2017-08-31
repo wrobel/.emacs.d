@@ -443,7 +443,7 @@ This message is not really interesting:
 
 Convenient keybindings to resize windows.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle yes :results silent
 (bind-key "H-C-<left>"  'shrink-window-horizontally)
 (bind-key "H-C-<right>" 'enlarge-window-horizontally)
 (bind-key "H-C-<down>"  'shrink-window)
