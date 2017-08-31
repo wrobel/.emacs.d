@@ -127,24 +127,6 @@ combinations that I use pretty often.
 
 These are the quick access keys that can be used while holding down the command key.
 
-****** Movement
-
-Quick, standard movement commands:
-
-#+begin_src emacs-lisp :tangle yes :results silent
-(global-set-key (kbd "H-i") 'previous-line)
-(global-set-key (kbd "H-k") 'next-line)
-(global-set-key (kbd "H-j") 'left-char)
-(global-set-key (kbd "H-l") 'right-char)
-(global-set-key (kbd "H-SPC") 'set-mark-command)
-(global-set-key (kbd "H-I") 'scroll-down-command)
-(global-set-key (kbd "H-K") 'scroll-up-command)
-(global-set-key (kbd "H-J") 'backward-word)
-(global-set-key (kbd "H-L") 'forward-word)
-(global-set-key (kbd "H-a") 'beginning-of-line)
-(global-set-key (kbd "H-e") 'end-of-line)
-#+END_SRC
-
 ****** Editing
 
 Quick, standard editing commands:
@@ -280,6 +262,48 @@ that usage:
     (keyfreq-mode 1)
     (keyfreq-autosave-mode 1))
 #+end_src
+
+
+*** Movement
+
+**** Global keys
+
+Quick, standard movement commands - these are the quick access keys
+that can be used while holding down the command key.
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(global-set-key (kbd "H-i") 'previous-line)
+(global-set-key (kbd "H-k") 'next-line)
+(global-set-key (kbd "H-j") 'left-char)
+(global-set-key (kbd "H-l") 'right-char)
+(global-set-key (kbd "H-SPC") 'set-mark-command)
+(global-set-key (kbd "H-I") 'scroll-down-command)
+(global-set-key (kbd "H-K") 'scroll-up-command)
+(global-set-key (kbd "H-J") 'backward-word)
+(global-set-key (kbd "H-L") 'forward-word)
+(global-set-key (kbd "H-a") 'beginning-of-line)
+(global-set-key (kbd "H-e") 'end-of-line)
+#+END_SRC
+
+**** Avy
+
+[[https://github.com/abo-abo/avy][Avy]] allows to quickly jump to characters/words/lines:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  (use-package avy
+    :ensure t
+    :demand t
+    :load-path "site-lisp/avy"
+    :bind
+    (("H-h" . avy-goto-char)
+     ("H-H" . avy-goto-char-2)
+     ("H-C-h" . avy-goto-char-timer)
+     ("H-g" . avy-goto-word-1)
+     ("H-m" . avy-goto-line))
+    :config
+    (avy-setup-default))
+#+END_SRC
+
 
 *** Backups
 
