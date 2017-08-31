@@ -438,6 +438,55 @@ This message is not really interesting:
 
 **** Modeline
 
+**** Windows
+***** Shrink windows
+
+Convenient keybindings to resize windows.
+
+#+begin_src emacs-lisp
+(bind-key "H-C-<left>"  'shrink-window-horizontally)
+(bind-key "H-C-<right>" 'enlarge-window-horizontally)
+(bind-key "H-C-<down>"  'shrink-window)
+(bind-key "H-C-<up>"    'enlarge-window)
+#+end_src
+
+#+RESULTS:
+: enlarge-window
+
+***** Ace Window
+
+[[https://github.com/abo-abo/ace-window][ace-window]] is a package that uses the same idea from ace-jump-mode for
+buffer navigation, but applies it to windows. The default keys are
+1-9, but it's faster to access the keys on the home row, so that's
+what I have them set to (with respect to Dvorak, of course).
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(use-package ace-window
+  :ensure t
+  :config
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?ö ?ä))
+  (ace-window-display-mode)
+  :bind ("H-n" . ace-window))
+#+end_src
+
+***** Winner mode - undo and redo window configuration
+
+[[https://www.emacswiki.org/emacs/WinnerMode][=winner-mode=]] lets you use =C-c <left>= and =C-c <right>= to switch
+between window configurations. This is handy when something has popped
+up a buffer that you want to look at briefly before returning to
+whatever you were working on. When you're done, press =C-c <left>=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+(use-package winner
+  :if (not noninteractive)
+  :defer 5
+  :ensure t
+  :bind (("H-<left>" . winner-undo)
+         ("H-<right>" . winner-redo))
+  :config
+  (winner-mode t))
+#+END_SRC
+
 *** Clock in the modeline
 
 I like having the clock.
