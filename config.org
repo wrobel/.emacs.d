@@ -213,7 +213,6 @@ Quick, standard editing commands:
     (define-key non-programming-map (kbd "j") 'jabber-connect)
     (define-key non-programming-map (kbd "o") 'org-agenda-list)
     (define-key non-programming-map (kbd "p") 'package-list-packages)
-    (define-key non-programming-map (kbd "e") 'eshell-new)
     (define-key non-programming-map (kbd "n") 'nodejs-repl)
     (define-key non-programming-map (kbd "s") slack-non-programming-map)
     (define-key non-programming-map (kbd "h") help-non-programming-map))
@@ -873,6 +872,23 @@ This initializes the set of languages =org-babel= supports:
 #+END_SRC
 
 ** Tools
+
+*** Shell
+
+Easily create new shells:
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+  (use-package eshell
+    :ensure t
+    :bind
+    (:map non-programming-map ("e" . eshell-new))
+    :config
+    (defun eshell-new ()
+      "Open a new eshell"
+      (interactive)
+      (eshell t)))
+#+END_SRC
+
 *** Browser
 
 Make sure we always rename the EWW buffer to get several of those
