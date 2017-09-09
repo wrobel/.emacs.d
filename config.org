@@ -727,6 +727,45 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | b
 nvm install --lts
 #+end_src
 
+***** Jest
+
+
+***** React / jsx
+
+Use web-mode for React / JSX files:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+    (use-package web-mode
+      :ensure t
+      :mode "\\.jsx$"
+      :config
+      (defun react-web-mode-hook ()
+        "Hooks for Web mode. Adjust indents"
+        ;;; http://web-mode.org/
+        (setq web-mode-markup-indent-offset 4)
+        (setq web-mode-css-indent-offset 4)
+        (setq web-mode-code-indent-offset 4)
+        (setq indent-tabs-mode nil))
+
+      (defadvice web-mode-highlight-part (around tweak-jsx activate)
+        (if (equal web-mode-content-type "jsx")
+            (let ((web-mode-enable-part-face nil))
+              ad-do-it)
+          ad-do-it))
+
+      (add-hook 'web-mode-hook  'react-web-mode-hook)
+      ;;(add-hook 'web-mode-hook (lambda ()
+      ;;                    (init-flycheck-eslint)))
+      )
+#+end_src
+
+I tested [[https://github.com/felipeochoa/rjsx-mode/issues][rjsx-mode]] but this is based on [[http://elpa.gnu.org/packages/js2-mode.html][js2-mode]] and the latter is
+somewhat [[https://github.com/mooz/js2-mode/issues/224][problematic]] with flowtype (displays errors as it does not
+parse flowtype annotations). js-mode seems to be more tolerant
+there. Maybe I could tweak the js2-mode configuration to simply ignore
+flowtype information but as I do not feel unhappy with the js-mode
+setup I did not look further into that for now.
+
 *** Tools
 **** Magit
 
