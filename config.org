@@ -509,7 +509,22 @@ whatever you were working on. When you're done, press =C-c <left>=.
   (winner-mode t))
 #+END_SRC
 
-*** Clock in the modeline
+**** Windmove - switching between windows
+
+Windmove lets you move between windows with something more natural than cycling through =C-x o= (=other-window=).
+Windmove doesn't behave well with Org, so we need to use different keybindings.
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+(use-package windmove
+  :bind
+  (("H-<end>" . windmove-right)
+   ("H-<home>" . windmove-left)
+   ("H-<prior>" . windmove-up)
+   ("H-<next>" . windmove-down)
+   ))
+#+END_SRC
+
+**** Clock in the modeline
 
 I like having the clock.
 
