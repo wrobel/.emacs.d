@@ -389,8 +389,12 @@ different branches.
 
 *** Help
 
+Some quick keyboard access to describing function that I still use
+frequently:
+
 #+BEGIN_SRC emacs-lisp :tangle yes :results silent
 (define-key help-non-programming-map (kbd "f") 'describe-function)
+(define-key help-non-programming-map (kbd "k") 'describe-key)
 #+END_SRC
 
 
