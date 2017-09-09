@@ -872,6 +872,35 @@ This initializes the set of languages =org-babel= supports:
 
 #+END_SRC
 
+** Tools
+*** Browser
+
+Make sure we always rename the EWW buffer to get several of those
+(similar to tabs):
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+  (use-package eww
+    :ensure t
+    :bind
+    (:map non-programming-map ("b" . eww))
+    :config
+    ;; Auto-rename new eww buffers
+    (defun rename-eww-hook ()
+      "Rename eww browser's buffer so sites open in new page."
+      (rename-buffer "eww" t))
+    (add-hook 'eww-mode-hook #'rename-eww-hook))
+#+END_SRC
+
+Also use the [[https://www.emacswiki.org/emacs/eww-lnum][=eww-lnum=]] package to allow following links quickly:
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+  (use-package eww-lnum
+    :ensure t
+    :config
+    (bind-key "f" #'eww-lnum-follow eww-mode-map)
+    (bind-key "F" #'eww-lnum-universal eww-mode-map))
+#+END_SRC
+
 ** Communication
 
 *** Slack
