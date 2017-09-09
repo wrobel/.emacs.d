@@ -388,6 +388,13 @@ different branches.
     (setq undo-tree-visualizer-diff t)))
 #+END_SRC
 
+*** Help
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+(define-key help-non-programming-map (kbd "f") 'describe-function)
+#+END_SRC
+
+
 *** GUI
 **** Minibuffer
 
