@@ -760,6 +760,8 @@ No more juggling windows after commiting. It's magit bliss.
   (jump-to-register :magit-fullscreen))
 #+end_src
 
+***** magithub (currently disabled)
+
 The package =magithub= provide access to [[github.com]] within emacs. This
 relies on the helper package [[https://github.com/magit/ghub][ghub]] which needs a [[https://github.com/settings/tokens][developer token]] for
 access to the [[https://api.github.com/][github API]]. I stored this token within the =pass= system
@@ -781,6 +783,8 @@ three seconds was too slow on my machine.
     :config
      (magithub-feature-autoinject t))
 #+end_src
+
+This has been to slow, so I disabled it.
 
 ** Org mode
 
