@@ -481,12 +481,14 @@ buffer navigation, but applies it to windows. The default keys are
 what I have them set to (with respect to Dvorak, of course).
 
 #+begin_src emacs-lisp :tangle yes :results silent
-(use-package ace-window
-  :ensure t
-  :config
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?ö ?ä))
-  (ace-window-display-mode)
-  :bind ("H-n" . ace-window))
+  (use-package ace-window
+    :ensure t
+    :config
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?ö ?ä))
+    (ace-window-display-mode)
+    :bind
+    ("H-n" . ace-window)
+    ("H-N" . other-window))
 #+end_src
 
 ***** Winner mode - undo and redo window configuration
