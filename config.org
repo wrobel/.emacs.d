@@ -145,109 +145,122 @@ Quick, standard editing commands:
 
 ***** Second level
 
-#+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Generic emacs commands
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#+begin_src emacs-lisp :tangle yes :results silent
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;
+  ;;  Generic emacs commands
+  ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; definition for your keybinding and menu
-(when (not my-generic-map) ;; if it is not already defined
-  ;; assign command to keys
-  (setq my-generic-map (make-sparse-keymap))
-  (define-key my-generic-map (kbd "a") 'beginning-of-line)
-  (define-key my-generic-map (kbd "e") 'end-of-line)
+  ;; definition for your keybinding and menu
+  (when (not my-generic-map) ;; if it is not already defined
+    ;; assign command to keys
+    (setq my-generic-map (make-sparse-keymap))
+    (define-key my-generic-map (kbd "a") 'beginning-of-line)
+    (define-key my-generic-map (kbd "e") 'end-of-line)
 
-  (define-key my-generic-map (kbd "k") 'kill-this-buffer)
-  (define-key my-generic-map (kbd "o") 'my-next-window)
-  (define-key my-generic-map (kbd "p") 'my-previous-window)
-  (define-key my-generic-map (kbd "ä") 'my-skip-four-windows)
-  (define-key my-generic-map (kbd "s") 'save-buffer)
-  (define-key my-generic-map (kbd "i") 'switch-to-buffer)
-  (define-key my-generic-map (kbd "f") 'find-file)
-  (define-key my-generic-map (kbd "C-s") 'write-file)
+    (define-key my-generic-map (kbd "k") 'kill-this-buffer)
+    (define-key my-generic-map (kbd "o") 'my-next-window)
+    (define-key my-generic-map (kbd "p") 'my-previous-window)
+    (define-key my-generic-map (kbd "ä") 'my-skip-four-windows)
+    (define-key my-generic-map (kbd "s") 'save-buffer)
+    (define-key my-generic-map (kbd "i") 'switch-to-buffer)
+    (define-key my-generic-map (kbd "f") 'find-file)
+    (define-key my-generic-map (kbd "C-s") 'write-file)
 
-  (define-key my-generic-map (kbd "C-c") 'save-buffers-kill-terminal)
- 
-  (define-key my-generic-map (kbd "0") 'delete-window)
+    (define-key my-generic-map (kbd "C-c") 'save-buffers-kill-terminal)
+   
+    (define-key my-generic-map (kbd "0") 'delete-window)
 
-  (define-key my-generic-map (kbd "g") 'keyboard-quit)
+    (define-key my-generic-map (kbd "g") 'keyboard-quit)
 
-  (define-key my-generic-map (kbd "ö") 'yank)
-  (define-key my-generic-map (kbd "v") 'yank)
-  (define-key my-generic-map (kbd "u") 'undo-tree-visualize)
-  (define-key my-generic-map (kbd "C-w") 'kill-region)
-  (define-key my-generic-map (kbd "x") 'kill-region)
-  (define-key my-generic-map (kbd "C-ö") 'backward-kill-word)
-  (define-key my-generic-map (kbd "w") 'kill-ring-save)
-  (define-key my-generic-map (kbd "c") 'kill-ring-save)
-  (define-key my-generic-map (kbd "q") 'fill-paragraph)
+    (define-key my-generic-map (kbd "ö") 'yank)
+    (define-key my-generic-map (kbd "v") 'yank)
+    (define-key my-generic-map (kbd "u") 'undo-tree-visualize)
+    (define-key my-generic-map (kbd "C-w") 'kill-region)
+    (define-key my-generic-map (kbd "x") 'kill-region)
+    (define-key my-generic-map (kbd "C-ö") 'backward-kill-word)
+    (define-key my-generic-map (kbd "w") 'kill-ring-save)
+    (define-key my-generic-map (kbd "c") 'kill-ring-save)
+    (define-key my-generic-map (kbd "q") 'fill-paragraph)
 
-  (define-key my-generic-map (kbd "h") help-map))
+    (define-key my-generic-map (kbd "h") help-map))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  Non programming mode stuff
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;
+  ;;  Non programming mode stuff
+  ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; definition for your keybinding and menu
-(when (not non-programming-map) ;; if it is not already defined
-  ;; assign command to keys
-  (setq non-programming-map (make-sparse-keymap))
-  (define-key non-programming-map (kbd "g") 'grep)
-  (define-key non-programming-map (kbd "c") 'calc)
-  (define-key non-programming-map (kbd "j") 'jabber-connect)
-  (define-key non-programming-map (kbd "o") 'org-agenda-list)
-  (define-key non-programming-map (kbd "p") 'package-list-packages)
-  (define-key non-programming-map (kbd "e") 'eshell-new)
-  (define-key non-programming-map (kbd "n") 'nodejs-repl))
+  (defvar slack-non-programming-map nil "Keymap for slack commands in emacs")
 
+  (when (not slack-non-programming-map) ;; if it is not already defined
+    ;; assign command to keys
+    (setq slack-non-programming-map (make-sparse-keymap)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;;  My programming mode stuff
-;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (defvar help-non-programming-map nil "Keymap for help commands in emacs")
 
-;; definition for your keybinding and menu
-(when (not magit-programming-map) ;; if it is not already defined
-  ;; assign command to keys
-  (setq magit-programming-map (make-sparse-keymap)))
+  (when (not help-non-programming-map) ;; if it is not already defined
+    ;; assign command to keys
+    (setq help-non-programming-map (make-sparse-keymap)))
 
-;; definition for your keybinding and menu
-(when (not whitespace-programming-map) ;; if it is not already defined
-  ;; assign command to keys
-  (setq whitespace-programming-map (make-sparse-keymap))
-  (define-key whitespace-programming-map (kbd "w") 'whitespace-mode)
-  (define-key whitespace-programming-map (kbd "c") 'whitespace-cleanup))
+  ;; definition for your keybinding and menu
+  (when (not non-programming-map) ;; if it is not already defined
+    ;; assign command to keys
+    (setq non-programming-map (make-sparse-keymap))
+    (define-key non-programming-map (kbd "g") 'grep)
+    (define-key non-programming-map (kbd "c") 'calc)
+    (define-key non-programming-map (kbd "j") 'jabber-connect)
+    (define-key non-programming-map (kbd "o") 'org-agenda-list)
+    (define-key non-programming-map (kbd "p") 'package-list-packages)
+    (define-key non-programming-map (kbd "e") 'eshell-new)
+    (define-key non-programming-map (kbd "n") 'nodejs-repl)
+    (define-key non-programming-map (kbd "s") slack-non-programming-map)
+    (define-key non-programming-map (kbd "h") help-non-programming-map))
 
-;; definition for your keybinding and menu
-(when (not js-programming-map) ;; if it is not already defined
-  ;; assign command to keys
-  (setq js-programming-map (make-sparse-keymap))
-  (define-key js-programming-map (kbd "e") 'local-eslint-fix)
-  (define-key js-programming-map (kbd "j") 'jest-test-file)
-  (define-key js-programming-map (kbd "u") 'jest-update-file)
-  (define-key js-programming-map (kbd "m") 'mocha-test-file)
-  (define-key js-programming-map (kbd "a") 'mocha-test-project))
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;
+  ;;  My programming mode stuff
+  ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; definition for your keybinding and menu
-(when (not my-programming-map) ;; if it is not already defined
-  ;; assign command to keys
-  (setq my-programming-map (make-sparse-keymap))
-  (define-key my-programming-map (kbd ";") 'comment-region)
-  (define-key my-programming-map (kbd ",") 'uncomment-region)
-  (define-key my-programming-map (kbd "RET") 'eval-region)
-  (define-key my-programming-map (kbd "d") 'set-personal-variable-debug-on-error)
-  (define-key my-programming-map (kbd "g") magit-programming-map)
-  (define-key my-programming-map (kbd "w") whitespace-programming-map))
-  (define-key my-programming-map (kbd "j") js-programming-map)
+  ;; definition for your keybinding and menu
+  (when (not magit-programming-map) ;; if it is not already defined
+    ;; assign command to keys
+    (setq magit-programming-map (make-sparse-keymap)))
 
-(global-set-key (kbd "H-ö") my-generic-map)
-(global-set-key (kbd "H-+") non-programming-map)
-(global-set-key (kbd "H-#") my-programming-map)
+  ;; definition for your keybinding and menu
+  (when (not whitespace-programming-map) ;; if it is not already defined
+    ;; assign command to keys
+    (setq whitespace-programming-map (make-sparse-keymap))
+    (define-key whitespace-programming-map (kbd "w") 'whitespace-mode)
+    (define-key whitespace-programming-map (kbd "c") 'whitespace-cleanup))
+
+  ;; definition for your keybinding and menu
+  (when (not js-programming-map) ;; if it is not already defined
+    ;; assign command to keys
+    (setq js-programming-map (make-sparse-keymap))
+    (define-key js-programming-map (kbd "e") 'local-eslint-fix)
+    (define-key js-programming-map (kbd "j") 'jest-test-file)
+    (define-key js-programming-map (kbd "u") 'jest-update-file)
+    (define-key js-programming-map (kbd "m") 'mocha-test-file)
+    (define-key js-programming-map (kbd "a") 'mocha-test-project))
+
+  ;; definition for your keybinding and menu
+  (when (not my-programming-map) ;; if it is not already defined
+    ;; assign command to keys
+    (setq my-programming-map (make-sparse-keymap))
+    (define-key my-programming-map (kbd ";") 'comment-region)
+    (define-key my-programming-map (kbd ",") 'uncomment-region)
+    (define-key my-programming-map (kbd "RET") 'eval-region)
+    (define-key my-programming-map (kbd "d") 'set-personal-variable-debug-on-error)
+    (define-key my-programming-map (kbd "g") magit-programming-map)
+    (define-key my-programming-map (kbd "w") whitespace-programming-map))
+    (define-key my-programming-map (kbd "j") js-programming-map)
+
+  (global-set-key (kbd "H-ö") my-generic-map)
+  (global-set-key (kbd "H-+") non-programming-map)
+  (global-set-key (kbd "H-#") my-programming-map)
 #+END_SRC
 
 **** Key frequencies
