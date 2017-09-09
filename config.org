@@ -909,25 +909,27 @@ Followed procedure at https://github.com/yuya373/emacs-slack
 
 
 
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package slack
-  :ensure t
-  :commands (slack-start)
-  :init
-  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
-  (setq slack-prefer-current-team t)
-  :config
-  (slack-register-team
-   :name "truck-pro"
-   :default t
-   :client-id secret-slack-tp-client-id
-   :client-secret secret-slack-tp-client-secret
-   :token secret-slack-tp-token
-   :subscribed-channels '(general random liveprodukt)))
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+    (use-package slack
+      :ensure t
+      :init
+      (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
+      (setq slack-prefer-current-team t)
+      :bind
+      (:map slack-non-programming-map
+            ("s" . slack-start)
+            ("r" . slack-select-unread-rooms)
+            ("t" . slack-select-unread-threads)
+            ("R" . slack-select-room))
+      :config
+      (slack-register-team
+       :name "truck-pro"
+       :default t
+       :client-id secret-slack-tp-client-id
+       :client-secret secret-slack-tp-client-secret
+       :token secret-slack-tp-token
+       :subscribed-channels '(general random liveprodukt)))
 #+END_SRC
-
-#+RESULTS:
-: t
 
 **** TODO Convert slack-register-team to a personal team list configurable in secrets.el
 
