@@ -141,7 +141,19 @@ Quick, standard editing commands:
 (global-set-key (kbd "H-c") 'kill-ring-save)
 (global-set-key (kbd "H-q") 'fill-paragraph)
 (global-set-key (kbd "H-s") 'save-buffer)
+(global-set-key (kbd "H-z") 'undo)
 #+END_SRC
+
+****** Files and buffers
+
+Quick, standard access commands:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(global-set-key (kbd "H-f") 'find-file)
+(global-set-key (kbd "H-b") 'switch-to-buffer)
+(global-set-key (kbd "H-d") 'kill-this-buffer)
+#+END_SRC
+
 
 ***** Second level
 
@@ -251,6 +263,7 @@ Quick, standard editing commands:
     (setq my-programming-map (make-sparse-keymap))
     (define-key my-programming-map (kbd ";") 'comment-region)
     (define-key my-programming-map (kbd ",") 'uncomment-region)
+    (define-key my-programming-map (kbd "i") 'indent-region)
     (define-key my-programming-map (kbd "RET") 'eval-region)
     (define-key my-programming-map (kbd "d") 'set-personal-variable-debug-on-error)
     (define-key my-programming-map (kbd "g") magit-programming-map)
@@ -270,9 +283,62 @@ that usage:
 #+begin_src emacs-lisp :tangle yes :results silent
   (use-package keyfreq
     :ensure t
+    :bind
+    (:map non-programming-map ("k" . keyfreq-show))
     :config
     (keyfreq-mode 1)
     (keyfreq-autosave-mode 1))
+#+end_src
+
+**** Unbound keys
+
+Use the [[http://melpa.org/#/unbound][unbound]] package to handle/display unbound keys:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  (use-package unbound
+    :commands describe-unbound-keys
+    :ensure t
+    :bind
+    (:map non-programming-map ("K" . describe-unbound-keys))
+    :config
+    (setq unbound-modifiers '(control meta shift super hyper alt))
+
+    (defun key-complexity-1 (key)           ; key:=(modifiers... key)
+      ;; Was "1"; But for me Control is the left pinky and I
+      ;; consider it to be of higher complexity than hyper
+      (+ (if (memq 'control key) 2 0)
+         ;; Was "2"; But for me Meta is the right thumb and I
+         ;; consider it to be of higher complexity
+         (if (memq 'meta key) 4 0)
+         ;; Was "3"; But if Control is 2, then Shift (one below on the
+         ;; pinky) is fine with "2" as well
+         (if (memq 'shift key) 2 0)
+         (if (memq 'super key) 4 0)
+         ;; Was "4"; But for me Hyper is the left thumb and I
+         ;; consider it to be low complexity
+         (if (memq 'hyper key) 1 0)
+         (if (memq 'alt key) 3 0)
+         (* 2 (1- (length key)))
+         (progn
+           (setq key (car (last key)))
+           (if (integerp key)
+               (cond ((and (>= key ?a) (<= key ?z)) 0)
+                     ;; Original comment: "capitals are weird" and
+                     ;; the value was "6"; But I don't consider them
+                     ;; "that" weird.
+                     ((and (>= key ?A) (<= key ?Z)) 2)
+                     ((and (>= key ?0) (<= key ?9)) 2)
+                     ((memq key '(?\b ?\r ?\ )) 1)
+                     ;; Unshifted punctuation (US keyboards)
+                     ((memq key '(?` ?- ?= ?\t ?[ ?] ?\\ ?\; ?' ?, ?. ?/)) 3)
+                     ;; Other letters -- presume that one's keyboard has them if
+                     ;; we're going to consider binding them.
+                     ((let (case-fold-search)
+                        (string-match
+                         "[016A]" (category-set-mnemonics
+                                   (char-category-set key)))) 2)
+                     (t 5))
+             7)))))
 #+end_src
 
 
