@@ -830,7 +830,7 @@ three seconds was too slow on my machine.
 #+begin_src emacs-lisp :tangle yes :results silent
   (use-package magithub
     :after magit
-    :ensure t
+    :disabled t
     :init
      (setq ghub-instance "api.github.com")
      (setq magithub-api-timeout 30)
