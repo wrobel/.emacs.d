@@ -843,6 +843,17 @@ there. Maybe I could tweak the js2-mode configuration to simply ignore
 flowtype information but as I do not feel unhappy with the js-mode
 setup I did not look further into that for now.
 
+**** YAML
+
+Use =yaml-mode= for =.yml= or =.yaml= files:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  (use-package yaml-mode
+    :mode "\\.ya?ml\\'"
+    :ensure t)
+#+end_src
+
+
 *** Tools
 **** Magit
 
