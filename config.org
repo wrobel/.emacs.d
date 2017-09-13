@@ -911,16 +911,26 @@ This has been to slow, so I disabled it.
 
 ** Org mode
 
+*** org-agenda
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+(load-library "find-lisp")
+(setq org-agenda-files
+   (find-lisp-find-files "~/org/active" "\.org$"))
+#+END_SRC
+
 *** org-babel
 
 **** Supported languages
 
 This initializes the set of languages =org-babel= supports:
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
 (use-package ob-http
 :ensure t
 )
+
+(setq org-ditaa-jar-path "~/.emacs.d/vendor/ditaa0_9.jar")
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -939,8 +949,10 @@ This initializes the set of languages =org-babel= supports:
    (sh . t)
    (sqlite . t)))
 
+(add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
 #+END_SRC
 
+   
 ** Tools
 
 *** Shell
