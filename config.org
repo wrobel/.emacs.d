@@ -601,6 +601,14 @@ I like having the clock.
 (display-time-mode 1)
 #+end_src
 
+*** Encoding
+
+Set the default file encoding:
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
+#+END_SRC
 
 *** Git
 
