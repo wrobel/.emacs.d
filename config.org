@@ -819,6 +819,74 @@ Install [[https://nodejs.org/en/][Node JS]] via [[https://github.com/creationix/
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
 nvm install --lts
 #+end_src
+***** js-mode
+
+I'm happy with =js-mode= for my development. Seems to work fine for
+the combination of ES6, Flowtype and React/JSX:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  (defun search-local-js-config ()
+    (setq jssettings (concat (locate-dominating-file buffer-file-name ".emacs.js.el") ".emacs.js.el"))
+    (if (file-readable-p jssettings)
+        (progn
+          (load jssettings))))
+
+    (add-hook 'js-mode-hook
+              (lambda ()
+                (search-local-js-config)))
+#+end_src
+***** Eslint
+
+Allow for local flycheck definitions for eslint:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(defmacro flycheck-define-local-eslint-checker (checker-symbol config-file-symbol checker-path config-file-path)
+  `(progn
+     (flycheck-def-config-file-var ,config-file-symbol ,checker-symbol ,config-file-path
+       :safe #'stringp)
+     (flycheck-define-checker ,checker-symbol
+       "A JavaScript syntax and style checker using eslint. See URL `http://eslint.org'."
+       :command ("node"
+		 (eval ,checker-path)
+		  "--format=checkstyle"
+		  (config-file "--config" ,config-file-symbol)
+		  source)
+	:error-parser flycheck-parse-checkstyle
+	:modes (js-mode js2-mode js3-mode web-mode))
+	 (progn
+	   (add-to-list 'flycheck-checkers ',checker-symbol)
+	   (flycheck-select-checker ',checker-symbol)
+	   (flycheck-mode))))
+#+end_src
+
+Use the =eslint-fix= package to quick fix files using Eslint. Since
+=eslint-fix= is a rather small package and does not allow for a local
+eslint (which I'm using always) I simply copied the
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  (defun eslint-fix ()
+    "Format the current file with ESLint."
+    (interactive)
+    (let (
+          (local-eslint
+           (concat (locate-dominating-file buffer-file-name "package.json")
+                   "node_modules/.bin/eslint"))
+          (eslint-executable
+           (if (file-exists-p local-eslint)
+               local-eslint
+             (executable-find "eslint"))))
+      (if (file-exists-p eslint-executable)
+          (progn (call-process eslint-executable
+                               nil
+                               "*ESLint Errors*"
+                               nil
+                               "--fix"
+                               buffer-file-name)
+                 (revert-buffer t t t))
+        (message "ESLint not found.")))))
+
+  (define-key js-mode-map (kbd "A-l") 'eslint-fix)
+#+end_src
 
 ***** Jest
 
@@ -871,6 +939,18 @@ Use =yaml-mode= for =.yml= or =.yaml= files:
 
 
 *** Tools
+
+**** Flycheck
+#+begin_src emacs-lisp :tangle yes :results silent
+  (use-package flycheck
+    :ensure t)
+  (use-package flycheck-color-mode-line
+    :ensure t
+    :config
+    (eval-after-load "flycheck"
+      '(add-hook 'flycheck-mode-hook 'flycheck-color-mode-line-mode)))
+#+end_src
+
 **** Magit
 
 A great interface for git projects. It's much more pleasant to use
