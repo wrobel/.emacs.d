@@ -12,14 +12,14 @@ Set some basic information by copying =defaults.el= to =user.el= and adapting th
 The folling part loads the =defaults.el= file (as a safeguard) as well as the =user.el= file that should overwrite all values from =defaults.el=: 
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq user-settings-defaults-file (expand-file-name "defaults.el" user-emacs-directory))
-(load user-settings-defaults-file)
-(setq user-settings-file (expand-file-name "user.el" user-emacs-directory))
-(if (file-exists-p user-settings-file)
-(load user-settings-file))
-(setq user-secrets-file (expand-file-name "secrets.el" user-emacs-directory))
-(if (file-exists-p user-secrets-file)
-(load user-secrets-file))
+  (setq user-settings-defaults-file (expand-file-name "defaults.el" user-emacs-directory))
+  (load user-settings-defaults-file)
+  (setq user-settings-file (expand-file-name "user.el" user-emacs-directory))
+  (if (file-exists-p user-settings-file)
+      (load user-settings-file))
+  (setq user-secrets-file (expand-file-name "secrets.el" user-emacs-directory))
+  (if (file-exists-p user-secrets-file)
+      (load user-secrets-file))
 #+END_SRC
 
 Provide the settings as org-mode values:
