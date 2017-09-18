@@ -1051,6 +1051,19 @@ This has been to slow, so I disabled it.
 
 ** Org mode
 
+*** Mode settings
+
+Activate =flyspell= and =writegood-mode=:
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (flyspell-mode)))
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (writegood-mode)))
+#+END_SRC
+
 *** org-agenda
 
 #+BEGIN_SRC emacs-lisp :tangle yes :results silent
@@ -1137,6 +1150,44 @@ Also use the [[https://www.emacswiki.org/emacs/eww-lnum][=eww-lnum=]] package to
     :config
     (bind-key "f" #'eww-lnum-follow eww-mode-map)
     (bind-key "F" #'eww-lnum-universal eww-mode-map))
+#+END_SRC
+
+*** Writing
+
+**** ispell
+
+Ignore =org-babel= source blocks:
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+(add-to-list 'ispell-skip-region-alist '("#\\+BEGIN_SRC" . "#\\+END_SRC"))
+#+END_SRC
+
+**** flyspell
+
+NO spell check for embedded snippets:
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+(defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)
+  (let* ((rlt ad-return-value)
+         (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\|quote\\)")
+         (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\|quote\\)")
+         (case-fold-search t)
+         b e)
+    (when ad-return-value
+      (save-excursion
+        (setq b (re-search-backward begin-regexp nil t))
+        (if b (setq e (re-search-forward end-regexp nil t))))
+      (if (and b e (< (point) e)) (setq rlt nil)))
+    (setq ad-return-value rlt)))
+#+END_SRC
+
+*** Helper modes
+
+**** writegood-mode
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+    (use-package writegood-mode
+      :ensure t)
 #+END_SRC
 
 ** Communication
