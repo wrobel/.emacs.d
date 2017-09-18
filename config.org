@@ -938,6 +938,30 @@ Use =yaml-mode= for =.yml= or =.yaml= files:
     :ensure t)
 #+end_src
 
+*** Documentation
+
+**** Markdown
+
+Enable markdown:
+
+#+BEGIN_SRC emacs-lisp :tangle yes :results silent
+  (use-package markdown-mode
+    :ensure t
+    :mode (("\\`README\\.md\\'" . gfm-mode)
+           ("\\.md\\'"          . markdown-mode)
+           ("\\.markdown\\'"    . markdown-mode))
+    :config
+    (add-hook 'markdown-mode-hook
+              (lambda ()
+                (visual-line-mode t)
+                (writegood-mode t)
+                (flyspell-mode t)))
+    (setq markdown-command "pandoc --smart -f markdown -t html")
+    (setq markdown-css-paths `(,(expand-file-name "markdown.css" (expand-file-name "vendor" user-emacs-directory))))
+    (use-package markdown-preview-mode
+      :ensure t))
+#+END_SRC
+
 
 *** Tools
 
