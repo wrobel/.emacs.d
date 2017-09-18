@@ -861,7 +861,8 @@ Allow for local flycheck definitions for eslint:
 
 Use the =eslint-fix= package to quick fix files using Eslint. Since
 =eslint-fix= is a rather small package and does not allow for a local
-eslint (which I'm using always) I simply copied the
+eslint (which I'm using always) I simply copied the =eslint-fix=
+package content (the single =eslint-fix= function:
 
 #+begin_src emacs-lisp :tangle yes :results silent
   (defun eslint-fix ()
