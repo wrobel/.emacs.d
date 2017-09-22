@@ -868,10 +868,17 @@ the combination of ES6, Flowtype and React/JSX:
         (progn
           (load jssettings))))
 
-    (add-hook 'js-mode-hook
-              (lambda ()
-                (search-local-js-config)))
+  (add-hook 'js-mode-hook
+            (lambda ()
+              (define-key js-mode-map (kbd "A-l") 'eslint-fix)
+              (search-local-js-config)))
+
+  (add-hook 'web-mode-hook
+            (lambda ()
+              (define-key web-mode-map (kbd "A-l") 'eslint-fix)
+              (search-local-js-config)))
 #+end_src
+
 ***** Eslint
 
 Allow for local flycheck definitions for eslint:
@@ -921,9 +928,8 @@ package content (the single =eslint-fix= function:
                                "--fix"
                                buffer-file-name)
                  (revert-buffer t t t))
-        (message "ESLint not found.")))))
+        (message "ESLint not found."))))
 
-  (define-key js-mode-map (kbd "A-l") 'eslint-fix)
 #+end_src
 
 ***** Jest
