@@ -835,8 +835,19 @@ Install the [[https://github.com/DamienCassou/auth-password-store][=auth-passwor
 ***** TODO Look at helm-pass https://github.com/jabranham/helm-pass
 
 ** Coding
+
+*** Global settings
+
+**** No tabs
+
+Disable tabs:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+(setq-default indent-tabs-mode nil)
+#+end_src
+
 *** Languages
-**** Javascript
+**** JavaScript
 ***** Node JS / nvm
 
 Install [[https://nodejs.org/en/][Node JS]] via [[https://github.com/creationix/nvm][Node version manager]]:
