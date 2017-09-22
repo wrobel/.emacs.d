@@ -229,6 +229,12 @@ buffer navigation:
   ;;
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+  (defvar buffer-non-programming-map nil "Keymap for buffer related commands in emacs")
+
+  (when (not buffer-non-programming-map) ;; if it is not already defined
+    ;; assign command to keys
+    (setq buffer-non-programming-map (make-sparse-keymap)))
+
   (defvar slack-non-programming-map nil "Keymap for slack commands in emacs")
 
   (when (not slack-non-programming-map) ;; if it is not already defined
@@ -252,6 +258,7 @@ buffer navigation:
     (define-key non-programming-map (kbd "p") 'package-list-packages)
     (define-key non-programming-map (kbd "n") 'nodejs-repl)
     (define-key non-programming-map (kbd "s") slack-non-programming-map)
+    (define-key non-programming-map (kbd "b") buffer-non-programming-map)
     (define-key non-programming-map (kbd "h") help-non-programming-map))
 
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -299,6 +306,16 @@ buffer navigation:
   (global-set-key (kbd "H-+") non-programming-map)
   (global-set-key (kbd "H-#") my-programming-map)
 #+END_SRC
+
+
+#+begin_src emacs-lisp :tangle yes :results silent
+  ;; definition for your keybinding and menu
+  (when (not buffer-non-programming-map) ;; if it is not already defined
+    ;; assign command to keys
+    (setq buffer-non-programming-map (make-sparse-keymap))
+    (define-key buffer-non-programming-map (kbd "c") 'whitespace-cleanup))
+#+END_SRC
+
 
 **** Key frequencies
 
