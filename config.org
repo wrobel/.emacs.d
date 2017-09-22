@@ -170,6 +170,15 @@ Quick, standard access commands:
 (global-set-key (kbd "H-d") 'kill-this-buffer)
 #+END_SRC
 
+****** Minibuffer navigation
+
+These are the same commands that I use for up and down in standard
+buffer navigation:
+
+#+begin_src emacs-lisp :tangle yes :results silent
+    (define-key minibuffer-local-map (kbd "H-i") 'previous-line-or-history-element)
+    (define-key minibuffer-local-map (kbd "H-k") 'next-line-or-history-element)
+#+END_SRC
 
 ***** Second level
 
