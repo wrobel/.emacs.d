@@ -1,7 +1,7 @@
 #+TITLE: Gunnar Wrobel's Emacs configuration
 #+OPTIONS: toc:4 h:4
 
-* Emacs configuation
+* Emacs configuration
 
 ** Global settings
 
