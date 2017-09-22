@@ -1287,3 +1287,7 @@ Documentation for =alert=: https://github.com/jwiegley/alert
 ** TO-DOs
 
 *** TODO Look at helm https://emacs-helm.github.io/helm/
+
+% Local Variables:
+% ispell-local-dictionary: "english" 
+% End:
