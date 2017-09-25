@@ -915,20 +915,21 @@ package content (the single =eslint-fix= function:
     (let (
           (local-eslint
            (concat (locate-dominating-file buffer-file-name "package.json")
-                   "node_modules/.bin/eslint"))
-          (eslint-executable
-           (if (file-exists-p local-eslint)
-               local-eslint
-             (executable-find "eslint"))))
-      (if (file-exists-p eslint-executable)
-          (progn (call-process eslint-executable
-                               nil
-                               "*ESLint Errors*"
-                               nil
-                               "--fix"
-                               buffer-file-name)
-                 (revert-buffer t t t))
-        (message "ESLint not found."))))
+                   "node_modules/.bin/eslint")))
+      (let
+          ((eslint-executable
+            (if (file-exists-p local-eslint)
+                local-eslint
+              (executable-find "eslint"))))
+        (if (file-exists-p eslint-executable)
+            (progn (call-process eslint-executable
+                                 nil
+                                 "*ESLint Errors*"
+                                 nil
+                                 "--fix"
+                                 buffer-file-name)
+                   (revert-buffer t t t))
+          (message "ESLint not found.")))))
 
 #+end_src
 
